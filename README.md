@@ -8,7 +8,7 @@
 > **"Stop guessing why it failed, start seeing how it learns."**
 
 -----
-<img width="614" height="343" alt="image" src="https://github.com/user-attachments/assets/99121460-2078-4902-bb16-c3bb5c2cc830" />
+<img width="768" height="429" alt="image" src="https://github.com/user-attachments/assets/99121460-2078-4902-bb16-c3bb5c2cc830" />
 
 
 ## 💡 Vision
