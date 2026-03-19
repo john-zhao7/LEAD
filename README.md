@@ -1,77 +1,112 @@
-# LEAD: Learning Experiment Automated Diagnostics
+# LEAD — Learning Experiment Automated Diagnostics
 
-[](https://opensource.org/licenses/MIT)
-[](https://www.python.org/downloads/)
-[](https://www.google.com/search?q=https://github.com/topics/ai-research)
-[](https://pytorch.org/)
+LEAD is an **experiment forensics and diagnosis engine** for ML and robot-learning workflows.
 
-> **"Stop guessing why it failed, start seeing how it learns."**
+It is built to answer: _what likely went wrong, what evidence supports that claim, what is still uncertain, and what should we try next?_
 
------
-<img width="768" height="429" alt="image" src="https://github.com/user-attachments/assets/99121460-2078-4902-bb16-c3bb5c2cc830" />
+## Why LEAD is different
 
+LEAD is not:
+- an auto-tuner
+- a dashboard clone
+- a log-only summarizer
 
-## 💡 Vision
+LEAD is:
+- evidence-weighted and uncertainty-aware
+- confound-aware before ablation synthesis
+- robust to partial/messy artifacts
+- robot-learning specialized (action saturation, reward gaming, rollout pathologies)
 
-In the era of large-scale model training and complex robot learning, **compute** has become a commodity, while **researcher bandwidth** is the new bottleneck.
+## Core workflow (MVP)
 
-**LEAD** is designed to transform raw compute hours into actionable scientific insights. We go beyond simple logging. By aggregating heterogeneous data—including WandB metrics, Git diffs, stdout logs, and YAML configs—LEAD provides **PhD-level "post-mortem" reports** for every experiment, bridging the gap between raw data and breakthrough discovery.
+1. Artifact inventory (present + missing + quality)
+2. Ingestion and normalization
+3. Timeline reconstruction
+4. Single-run anomaly diagnostics
+5. Cross-run comparability/confound audit
+6. Evidence-tiered hypothesis ranking
+7. Structured post-mortem generation (JSON + Markdown)
 
------
-
-## ⚡ Core Pain Points
-
-In professional AI research and industrial R\&D, we address three critical bottlenecks:
-
-### 1\. The "Black-Box" Failure Dilemma
-
-When an experiment fails—characterized by oscillating loss, stagnant convergence, or performance inferior to baselines—researchers are often forced to rely on "vibe-based" troubleshooting. Is the Learning Rate too high? Is there a subtle bug in the buffer logic? Or is it a distribution shift in the data? LEAD provides evidence-based diagnostics to pinpoint the root cause.
-
-### 2\. Information Overload & Fragmentation
-
-Experimental data is scattered across `WandB` curves, gigabytes of `stdout` logs, `YAML` configurations, and forgotten lines in a `git diff`. The human brain struggles to establish causal links across these high-dimensional, multi-modal data sources.
-
-### 3\. Sunk Costs of Ablation Studies
-
-Proving a component's effectiveness often requires dozens of runs. Without a tool to extract **non-linear dependencies** (e.g., "Component A only works when Strategy B is active"), most of your GPU hours are wasted on noise rather than signal.
-
------
-
-## 🛠️ Key Features (Research-Grade)
-
-  * 🔍 **Heterogeneous Correlation Engine**: Automatically aligns WandB metrics with Git commit history and system logs to identify exactly how code changes impact model behavior.
-  * 🩺 **Model Health Auditing**: Monitors deep signals like **Weight Rank Collapse**, gradient vanishing/explosion, and dead neurons in real-time.
-  * 📊 **Automated Ablation Synthesis**: Leverages LLM-driven reasoning to analyze multiple experimental groups and calculate the marginal contribution of each hyperparameter or module.
-  * 📝 **Automated "Post-Mortem" Generation**: Generates structured, professional diagnostic reports, saving you from the drudgery of manual experiment summarization.
-
------
-
-## 🚀 Quick Start
-
-*(This section will be updated as the Skill develops)*
+## Install
 
 ```bash
-# Install LEAD
-pip install experiment-lead
-
-# Run a diagnostic on a specific experiment
-lead audit --run_id <wandb_id> --compare_with <baseline_id>
+cd skills/LEAD
+python -m venv .venv
+source .venv/bin/activate
+pip install -e .[dev]
 ```
 
------
+## CLI
 
-## 📂 Roadmap
+```bash
+lead init --project ./my_exp --session-id exp-2026-03-19
+lead inspect --run-dir ./my_exp/run_001
+lead diagnose-run --run-dir ./my_exp/run_001 --out reports/run_001.json
+lead compare-runs --run-dirs ./my_exp/run_a ./my_exp/run_b --out reports/compare.json
+lead postmortem --run-dirs ./my_exp/run_a ./my_exp/run_b --out reports/postmortem.json --md-out reports/postmortem.md
+lead export-report --input reports/postmortem.json --format md --out reports/postmortem_export.md
+```
 
-  - [ ] **Phase 1**: Integration with WandB and Git Diff basic analysis.
-  - [ ] **Phase 2**: Implementation of PyTorch-based gradient & weight health monitoring.
-  - [ ] **Phase 3**: LLM-driven causal analysis and automated LaTeX/Markdown report generation.
+## Supported artifacts (MVP)
 
------
+- `metrics.jsonl` (canonical local metric log)
+- `wandb_history.csv` (offline export)
+- `stdout.log`, `stderr.log`
+- `config.yaml` / `config.yml`
+- `git_meta.json` (or git metadata from repo)
 
-## 🤝 Contribution
+## Passive vs Instrumented mode
 
-We welcome contributions from PhDs, researchers, and engineers who are tired of staring at loss curves. Whether it's a feature request, a bug report, or a new diagnostic heuristic, let's build the future of automated research together.
+### Passive mode
+Use existing artifacts only. Works on failed/crashed/partial runs.
 
------
+### Instrumented mode (optional hooks)
+Provides richer signals when available:
+- per-layer grad norms
+- update/weight ratios
+- activation sparsity
+- dead-neuron proxies
+- effective rank proxies
+- NaN/Inf stats
 
-**LEAD** —— *Finding the signal in the noise for every GPU hour spent.*
+See `lead/integrations/pytorch_hooks.py` and `lead/integrations/lightning_hooks.py`.
+
+## Output structure (fixed)
+
+LEAD post-mortem sections:
+1. Experiment Overview
+2. Available Artifacts and Data Quality
+3. Timeline of Key Events
+4. Observed Anomalies
+5. Failure Signatures / Health Findings
+6. Comparability and Confound Assessment
+7. Ranked Causal Hypotheses
+8. Evidence Table
+9. What is Well Supported vs Uncertain
+10. Recommended Next Experiments
+11. Limitations of Current Diagnosis
+12. Final Confidence Summary
+
+## Example cases included
+
+- `tests/fixtures/single_run/` instability + stderr warnings
+- `tests/fixtures/multi_run/` apparent win with hidden confound
+- `tests/fixtures/robot_learning_case/` reward up but suspicious action saturation
+
+Also see `examples/*` for sample outputs.
+
+## Roadmap (deferred)
+
+- checkpoint deep introspection
+- richer TensorBoard native event parsing
+- optional visualization module
+- online integrations and distributed orchestration
+
+## Honesty policy
+
+LEAD separates:
+- **direct_evidence**
+- **strong_inference**
+- **weak_hypothesis**
+
+It does not present correlation as guaranteed causality.

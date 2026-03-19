@@ -1,0 +1,4 @@
+seed: 7
+train_steps: 120000
+learning_rate: 0.0002
+control_hz: 50

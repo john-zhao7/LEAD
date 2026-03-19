@@ -1,0 +1,4 @@
+seed: 1
+train_steps: 100000
+learning_rate: 0.0003
+grad_clip: 10.0

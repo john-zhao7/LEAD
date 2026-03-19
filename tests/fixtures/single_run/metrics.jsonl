@@ -1,0 +1,5 @@
+{"step":1,"timestamp":1,"loss":1.2,"reward":0.1}
+{"step":2,"timestamp":2,"loss":1.1,"reward":0.15}
+{"step":3,"timestamp":3,"loss":5.9,"reward":0.12}
+{"step":4,"timestamp":4,"loss":9.5,"reward":0.09}
+{"step":5,"timestamp":5,"loss":1e309,"reward":0.05}
