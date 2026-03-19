@@ -9,6 +9,8 @@
 
 -----
 
+<img width="572" height="1024" alt="image" src="https://github.com/user-attachments/assets/f2ac936c-a7f4-4431-a74e-87e4e566c9cb" />
+
 ## 💡 Vision
 
 In the era of large-scale model training and complex robot learning, **compute** has become a commodity, while **researcher bandwidth** is the new bottleneck.
