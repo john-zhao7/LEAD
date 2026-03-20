@@ -4,6 +4,7 @@ LEAD is an **experiment forensics and diagnosis engine** for ML and robot-learni
 
 It is built to answer: _what likely went wrong, what evidence supports that claim, what is still uncertain, and what should we try next?_
 
+<img width="768" height="429" alt="image" src="https://github.com/user-attachments/assets/99121460-2078-4902-bb16-c3bb5c2cc830" />
 ## Why LEAD is different
 
 LEAD is not:
